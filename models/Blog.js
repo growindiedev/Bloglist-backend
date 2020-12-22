@@ -5,7 +5,7 @@ const blogSchema = new mongoose.Schema({
     author: {type: String, required: true},
     url: {type: String, required: true},
     likes: {type: Number, default: 0},
-    User: {
+    user: {
       type: mongoose.Schema.Types.ObjectId, 
       ref: 'User'
     }
@@ -21,6 +21,6 @@ const blogSchema = new mongoose.Schema({
 
 
   const Blog = mongoose.model('Blog', blogSchema)
-
+  
 
   module.exports = Blog

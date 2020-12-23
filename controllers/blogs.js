@@ -4,6 +4,8 @@ const { request } = require('../app')
 const Blog = require('../models/Blog')
 const User = require('../models/User')
 const jwt = require('jsonwebtoken')
+const {authenticateToken} = require('../utils/middleware')
+
 
 // const blogss = [ 
 //   {title: "React patterns", author: "Michael Chan", url: "https://reactpatterns.com/", likes: 7, userId: "5fe1ff9b3bee3914e811c5aa"}, 
@@ -25,24 +27,21 @@ const jwt = require('jsonwebtoken')
     return response.json(result)
   })
 
-  const authenticateToken = (request, response, next) => {
-    const authorization =  request.get('authorization')
-
-    const token = authorization && authorization.toLowerCase().startsWith('bearer') && authorization.substring(7)
-
-    //if(token === null) return response.status(401).json({ error: 'token missing or invalid' })
-
-    jwt.verify(token, process.env.SECRET, (error, decodedToken) => {
-      if(error){
-        return response.status(401).json({ error: 'token missing or invalid' })
-      }
-      request.decodedToken = decodedToken
-      console.log('tokenU$er', decodedToken)
-      next()
-    })
-  }
+  // const authenticateToken = (request, response, next) => {
+  //   const authorization =  request.get('authorization')
+    
+  //   const token = authorization && authorization.toLowerCase().startsWith('bearer') && authorization.substring(7)
+  //   jwt.verify(token, process.env.SECRET, (error, decodedToken) => {
+  //     if(error){
+  //       return response.status(401).json({ error: 'token missing or invalid' })
+  //     }
+  //     request.decodedToken = decodedToken
+  //     console.log('tokenU$er', decodedToken)
+  //     next()
+  //   })
+  // }
   
-  blogsRouter.post('/', authenticateToken , async (request, response) => {
+  blogsRouter.post('/', authenticateToken, async (request, response) => {
       // const {title, author, url, likes, userId} = request.body
       // const theUser = await User.findById(userId)
       // const blog = new Blog({title, author, url, likes, user: theUser.id})

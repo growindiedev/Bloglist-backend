@@ -17,8 +17,6 @@ usersRouter.post('/', async(req, res) => {
         return response.status(400).json({error: 'password must be least 3 char long'})
     }
 
-    
-
     const user = new User({
         username, name, passwordHash
     })

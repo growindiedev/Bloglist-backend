@@ -3,7 +3,6 @@ const { response } = require('express')
 const { request } = require('../app')
 const Blog = require('../models/Blog')
 const User = require('../models/User')
-const jwt = require('jsonwebtoken')
 const {authenticateToken} = require('../utils/middleware')
 
 
@@ -23,25 +22,12 @@ const {authenticateToken} = require('../utils/middleware')
 
   blogsRouter.get('/:id', async (request, response) => {
     const { id } = request.params
-    const result = await Blog.findById(id).populate('user')
+    const result = await Blog.findById(id).populate('user' )
     return response.json(result)
   })
 
-  // const authenticateToken = (request, response, next) => {
-  //   const authorization =  request.get('authorization')
-    
-  //   const token = authorization && authorization.toLowerCase().startsWith('bearer') && authorization.substring(7)
-  //   jwt.verify(token, process.env.SECRET, (error, decodedToken) => {
-  //     if(error){
-  //       return response.status(401).json({ error: 'token missing or invalid' })
-  //     }
-  //     request.decodedToken = decodedToken
-  //     console.log('tokenU$er', decodedToken)
-  //     next()
-  //   })
-  // }
   
-  blogsRouter.post('/', authenticateToken, async (request, response) => {
+  blogsRouter.post('/', authenticateToken , async (request, response) => {
       // const {title, author, url, likes, userId} = request.body
       // const theUser = await User.findById(userId)
       // const blog = new Blog({title, author, url, likes, user: theUser.id})
@@ -68,10 +54,25 @@ const {authenticateToken} = require('../utils/middleware')
   })
 
 
-  blogsRouter.delete('/:id', async (request, response) => {
+  blogsRouter.delete('/:id', authenticateToken, async (request, response) => {
     const { id } = request.params
-    const result = await Blog.findByIdAndDelete(id)
-    return response.status(404).end()
+
+    const blog = await Blog.findById(id)
+    const user = await User.findById(request.decodedToken.id)
+    //check if creater of blog is trying to delete it 
+    if(blog.user.toString() === user.id.toString()){
+      await Blog.findByIdAndDelete(id)
+    
+    // remove the blog from user object blogs array
+      user.blogs.splice(user.blogs.indexOf(blog.id), 1)
+      await user.save()
+      response.status(204).end()
+      
+    } else {
+      response.status.status(404).json({ error: 'You are not authorized to delete this blog' })
+    }
+    
+    
   })
 
 

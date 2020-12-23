@@ -6,14 +6,6 @@ const User = require('../models/User')
 const {authenticateToken} = require('../utils/middleware')
 
 
-// const blogss = [ 
-//   {title: "React patterns", author: "Michael Chan", url: "https://reactpatterns.com/", likes: 7, userId: "5fe1ff9b3bee3914e811c5aa"}, 
-//   {title: "Go To Statement Considered Harmful", author: "Edsger W. Dijkstra", url: "http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html", likes: 5, userId: "5fe1ff9b3bee3914e811c5aa"}, 
-//   {title: "Canonical string reduction", author: "Edsger W. Dijkstra", url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html", likes: 12, userId: "5fe1ff9b3bee3914e811c5aa"}, 
-//   {title: "First class tests", author: "Robert C. Martin", url: "http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll", likes: 10}, {title: "TDD harms architecture", author: "Robert C. Martin", url: "http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html", likes: 0, userId: "5fe1ff9b3bee3914e811c5aa"}, 
-//   {title: "Type wars", author: "Robert C. Martin", url: "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html", likes: 2, userId: "5fe1ff9b3bee3914e811c5aa"}
-// ]
-
   blogsRouter.get('/', async (request, response) => {
     const blogs = await Blog.find({}).populate('user')
     return response.json(blogs)
@@ -28,9 +20,7 @@ const {authenticateToken} = require('../utils/middleware')
 
   
   blogsRouter.post('/', authenticateToken , async (request, response) => {
-      // const {title, author, url, likes, userId} = request.body
-      // const theUser = await User.findById(userId)
-      // const blog = new Blog({title, author, url, likes, user: theUser.id})
+
 
       const {title, author, url, likes} = request.body
 
@@ -41,7 +31,6 @@ const {authenticateToken} = require('../utils/middleware')
       const savedBlog = await blog.save()
       user.blogs = user.blogs.concat(savedBlog.id)
       await user.save()
-
       return response.status(201).json(savedBlog)
       
   })
